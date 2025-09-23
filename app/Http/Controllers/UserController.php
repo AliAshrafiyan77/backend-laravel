@@ -9,7 +9,6 @@ class UserController extends Controller
     public function user(Request $request)
     {
         $user = auth()->user();
-        info($user);
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
