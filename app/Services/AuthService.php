@@ -54,10 +54,10 @@ class AuthService
         ]);
     }
 
-    public function startPkceService($codeChallenge , $codeChallengeMethod)
+    public function startPkceService($codeChallenge, $codeChallengeMethod)
     {
         try {
-            
+
             if (! $codeChallenge) {
                 throw new Exception('دوباره تلاش کنید.');
             }
