@@ -9,13 +9,18 @@ use Throwable;
 
 class AuthService
 {
-    public function registerService(array $data)
+    public function loginViewService()
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
+            if (auth()->check()) {
+                return redirect(env('NEXT_DASHBOARD_URL'));
+            }
+            return view('auth.login');
+
+        } catch (Throwable $e) {
+            report($e);
+            throw new Exception('خطای سرور رخ داده است.');
+        }
 
     }
 
@@ -27,7 +32,8 @@ class AuthService
             }
 
             session()->regenerate();
-            $this->redirectService();
+
+            return $this->redirectService();
 
         } catch (Throwable $e) {
             report($e);
@@ -35,10 +41,21 @@ class AuthService
         }
     }
 
+    public function registerService(array $data)
+    {
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+    }
+
     public function redirectService()
     {
-        $code_challenge = session()->pull('code_challenge');
-        $code_challenge_method = session()->pull('code_challenge_method');
+
+        $code_challenge = session()->get('code_challenge');
+        $code_challenge_method = session()->get('code_challenge_method');
 
         if ($code_challenge === null || $code_challenge_method === null) {
             return redirect('http://localhost:3000');
@@ -46,7 +63,7 @@ class AuthService
 
         return redirect()->route('passport.authorizations.authorize', [
             'client_id' => env('PASSPORT_CLIENT_ID'),
-            'redirect_uri' => 'http://localhost:3000/auth/callback',
+            'redirect_uri' => env('PASSPORT_REDIRECT_URL'),
             'response_type' => 'code',
             'scope' => '',
             'code_challenge' => $code_challenge,
@@ -57,7 +74,6 @@ class AuthService
     public function startPkceService($codeChallenge, $codeChallengeMethod)
     {
         try {
-
             if (! $codeChallenge) {
                 throw new Exception('دوباره تلاش کنید.');
             }
@@ -65,7 +81,7 @@ class AuthService
             session()->put('code_challenge', $codeChallenge);
             session()->put('code_challenge_method', $codeChallengeMethod);
 
-            $this->redirectService();
+            return $this->redirectService();
 
         } catch (Throwable $e) {
             report($e);

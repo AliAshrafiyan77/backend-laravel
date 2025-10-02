@@ -36,7 +36,7 @@ return [
     ],
     'passport' => [
         'client_id' => env('PASSPORT_CLIENT_ID'),
-        'redirect_uri' => env('PASSPORT_REDIRECT_URI', 'http://localhost:3000/auth/callback'),
+        'redirect_uri' => env('PASSPORT_REDIRECT_URL', 'http://localhost:3000/auth/callback'),
     ],
 
 ];

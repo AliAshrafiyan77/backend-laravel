@@ -17,15 +17,15 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function loginView()
+    public function loginView(Request $request)
     {
-        $code_challenge = session('code_challenge');
-        $code_challenge_method = session('code_challenge_method');
-        if ($code_challenge == null || $code_challenge_method == null) {
-            return redirect('http://localhost:3000');
+        try {
+            return $this->authService->loginViewService();
+        } catch (Throwable $e) {
+            return back()->withErrors([
+                'login' => $e->getMessage(),
+            ]);
         }
-
-        return view('auth.login');
     }
 
     public function login(LoginRequest $request)
@@ -59,7 +59,7 @@ class AuthController extends Controller
         $codeChallenge = $request->query('code_challenge');
         $codeChallengeMethod = $request->query('code_challenge_method') ?? 'S256';
         try {
-            return $this->authService->startPkceService($codeChallenge , $codeChallengeMethod);
+            return $this->authService->startPkceService($codeChallenge, $codeChallengeMethod);
         } catch (Throwable $e) {
             return response($e->getMessage(), 400);
         }
