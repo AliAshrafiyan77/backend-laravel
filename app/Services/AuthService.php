@@ -15,6 +15,7 @@ class AuthService
             if (auth()->check()) {
                 return redirect(env('NEXT_DASHBOARD_URL'));
             }
+
             return view('auth.login');
 
         } catch (Throwable $e) {
@@ -24,10 +25,13 @@ class AuthService
 
     }
 
-    public function loginService(array $credentials)
+    public function loginService(array $userData)
     {
         try {
-            if (! auth()->attempt($credentials)) {
+            $user = User::where('email', $userData['email'])->first();
+
+            if (! auth()->guard('web')->attempt($userData)) {
+
                 throw new Exception('ایمیل یا کلمه عبور اشتباه است.');
             }
 
@@ -37,23 +41,12 @@ class AuthService
 
         } catch (Throwable $e) {
             report($e);
-            throw new Exception('خطای سرور رخ داده است.');
+            throw $e;
         }
-    }
-
-    public function registerService(array $data)
-    {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
     }
 
     public function redirectService()
     {
-
         $code_challenge = session()->get('code_challenge');
         $code_challenge_method = session()->get('code_challenge_method');
 
@@ -69,6 +62,16 @@ class AuthService
             'code_challenge' => $code_challenge,
             'code_challenge_method' => $code_challenge_method,
         ]);
+    }
+
+    public function registerService(array $data)
+    {
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
     }
 
     public function startPkceService($codeChallenge, $codeChallengeMethod)
