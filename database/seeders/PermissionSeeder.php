@@ -22,24 +22,28 @@ class PermissionSeeder extends Seeder
 
         try {
             $permissions = [
-                'teacher' => [
-                    ['name' => 'edit-teacher', 'display_name' => 'ویرایش اساتید', 'guard_name' => 'api'],
-                    ['name' => 'delete-teacher', 'display_name' => 'حذف اساتید', 'guard_name' => 'api'],
-                    ['name' => 'create-teacher', 'display_name' => 'ایجاد اساتید', 'guard_name' => 'api'],
-                    ['name' => 'read-teacher', 'display_name' => 'خواندن اساتید', 'guard_name' => 'api'],
-                ],
-                'student' => [
-                    ['name' => 'edit-student', 'display_name' => 'ویرایش دانشجویان', 'guard_name' => 'api'],
-                    ['name' => 'delete-student', 'display_name' => 'حذف دانشجویان', 'guard_name' => 'api'],
-                    ['name' => 'create-student', 'display_name' => 'ایجاد دانشجویان', 'guard_name' => 'api'],
-                    ['name' => 'read-student', 'display_name' => 'خواندن دانشجویان', 'guard_name' => 'api'],
-                ],
-                'admin' => [
-                    ['name' => 'edit-admin', 'display_name' => 'ویرایش مدیران', 'guard_name' => 'api'],
-                    ['name' => 'delete-admin', 'display_name' => 'حذف مدیران', 'guard_name' => 'api'],
-                    ['name' => 'create-admin', 'display_name' => 'ایجاد مدیران', 'guard_name' => 'api'],
-                    ['name' => 'read-admin', 'display_name' => 'خواندن مدیران', 'guard_name' => 'api'],
-                ],
+
+                // users
+                ['name' => 'update-user', 'display_name' => 'ویرایش کاربر', 'guard_name' => 'api'],
+                ['name' => 'delete-user', 'display_name' => 'حذف کاربر', 'guard_name' => 'api'],
+                ['name' => 'store-user', 'display_name' => 'ایجاد کاربر', 'guard_name' => 'api'],
+                ['name' => 'read-user', 'display_name' => 'خواندن کاربر', 'guard_name' => 'api'],
+
+                // roles
+                ['name' => 'update-role', 'display_name' => 'ویرایش نقش', 'guard_name' => 'api'],
+                ['name' => 'delete-role', 'display_name' => 'حذف نقش', 'guard_name' => 'api'],
+                ['name' => 'store-role', 'display_name' => 'ایجاد نقش', 'guard_name' => 'api'],
+                ['name' => 'read-role', 'display_name' => 'خواندن نقش', 'guard_name' => 'api'],
+                ['name' => 'attach-role', 'display_name' => 'تخصیص نقش به کابران', 'guard_name' => 'api'],
+                ['name' => 'detach-role', 'display_name' => 'حذف نقش کاربران', 'guard_name' => 'api'],
+
+                //permissions
+                ['name' => 'update-permission', 'display_name' => 'ویرایش دسترسی', 'guard_name' => 'api'],
+                ['name' => 'delete-permission', 'display_name' => 'حذف دسترسی', 'guard_name' => 'api'],
+                ['name' => 'store-permission', 'display_name' => 'ایجاد دسترسی', 'guard_name' => 'api'],
+                ['name' => 'read-permission', 'display_name' => 'خواندن دسترسی', 'guard_name' => 'api'],
+                ['name' => 'attach-permission', 'display_name' => 'تخصیص دسترسی به نقش ها', 'guard_name' => 'api'],
+                ['name' => 'detach-permission', 'display_name' => 'حذف دسترسی نقش ها', 'guard_name' => 'api'],
             ];
 
             $role = [
@@ -60,14 +64,12 @@ class PermissionSeeder extends Seeder
 
             $user->syncRoles([$superAdmin->name]);
 
-            foreach ($permissions as $group => $groupPermissions) {
-                foreach ($groupPermissions as $permission) {
-                    $newPermission = Permission::updateOrCreate(
-                        ['name' => $permission['name'], 'guard_name' => $permission['guard_name']],
-                        ['display_name' => $permission['display_name']]
-                    );
-                    $superAdmin->givePermissionTo($newPermission);
-                }
+            foreach ($permissions as $permission) {
+                $newPermission = Permission::updateOrCreate(
+                    ['name' => $permission['name'], 'guard_name' => $permission['guard_name']],
+                    ['display_name' => $permission['display_name']]
+                );
+                $superAdmin->givePermissionTo($newPermission);
             }
 
             DB::commit();
