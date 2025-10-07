@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Support\ServiceLogger;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
@@ -93,6 +94,7 @@ class AuthService
             ]);
             auth()->guard('web')->login($user);
             DB::commit();
+
             return $this->redirectService();
 
         } catch (Throwable $e) {
@@ -120,6 +122,28 @@ class AuthService
         } catch (Throwable $e) {
             ServiceLogger::error($e, 'AuthService@startPkceService');
             throw new Exception('خطای سرور در PKCE رخ داده است.');
+        }
+    }
+
+    public function logoutService(Request $request)
+    {
+        try {
+            if (auth('web')->check()) {
+                auth('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+
+            $user = $request->user();
+            if ($user && method_exists($user, 'token') && $user->token()) {
+                $user->token()->revoke();
+            }
+
+            return response()->json(['message' => 'کاربر با موفقیت خارج شد.']);
+        } catch (\Throwable $e) {
+            ServiceLogger::error($e, 'AuthService@logoutService');
+
+            return response()->json(['error' => 'خطا در خروج کاربر از سیستم.'], 400);
         }
     }
 }

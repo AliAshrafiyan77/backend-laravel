@@ -83,4 +83,15 @@ class AuthController extends Controller
             ], 400);
         }
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            return $this->authService->logoutService($request);
+        } catch (Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }

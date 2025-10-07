@@ -37,7 +37,6 @@ class ServiceLogger
             'message' => $e->getMessage(),
             'file'    => $e->getFile(),
             'line'    => $e->getLine(),
-            // 'trace'   => config('app.debug') ? $e->getTraceAsString() : null, // included only when debug = true
         ]);
     }
 
