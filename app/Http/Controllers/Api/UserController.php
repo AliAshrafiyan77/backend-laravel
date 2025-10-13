@@ -14,9 +14,6 @@ class UserController extends Controller
     }
     public function user(Request $request)
     {
-        // return response()->json([
-        //     'user'=>auth()->guard('web')->user()
-        // ]);
         $user = auth()->user();
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -24,7 +21,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function create() {
+    public function store() {
         
     }
 }

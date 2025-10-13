@@ -130,8 +130,8 @@ class AuthService
         try {
             if (auth('web')->check()) {
                 auth('web')->logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
+                session()->invalidate();
+                session()->regenerateToken();
             }
 
             $user = $request->user();
