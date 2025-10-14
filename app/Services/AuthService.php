@@ -36,7 +36,6 @@ class AuthService
     public function loginService(array $userData)
     {
         try {
-            $user = User::where('email', $userData['email'])->first();
 
             if (! auth()->guard('web')->attempt($userData)) {
                 throw new Exception('ایمیل یا کلمه عبور اشتباه است.');
