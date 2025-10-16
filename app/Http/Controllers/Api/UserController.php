@@ -3,25 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Services\UserService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class UserController extends Controller
 {
-    
-    public function __construct()
+    private UserService $userService;
+    public function __construct(UserService $userService)
     {
-        
+        $this->userService = $userService;
     }
     public function user(Request $request)
     {
-        $user = auth()->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        try {
+            $user = $this->userService->getUserService();
+            return response()->json($user);
+        } catch (Throwable $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
-        return response()->json($user);
     }
 
-    public function store() {
-        
+    public function store(StoreUserRequest $request) {
+        return response()->json(['tesxt'=>$request->all()]);
     }
 }
